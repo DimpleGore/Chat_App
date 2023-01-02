@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios';
-import { Container, Box, Typography, Tabs, Tab } from '@mui/material'
+import { Container, Box, Typography, Tabs, Tab} from '@mui/material'
 import TabList from '@mui/lab/TabList';
 import TabContext from '@mui/lab/TabContext';
 import TabPanel from '@mui/lab/TabPanel';
@@ -12,9 +12,14 @@ import Signup from '../Components/Authentication/Signup';
 
 
 
+
+
 function Homepage() {
 
+  
+
   const [data, setData] = useState("");
+  //const classes = useStyles();
 
   const fetchData = async () => {
     const res = await axios.get("/hello");
@@ -60,11 +65,22 @@ function Homepage() {
       }}>
         <Box sx={{ width: '100%', typography: 'body1' }}>
           <TabContext value={value}>
-            <Box sx={{ borderBottom: 1, borderColor: 'divider' }} aria-label="lab API tabs example">
-              <TabList onChange={handleChange} >
-                <Tab style={{ width: '50%' }} label="Login" value="1" />
-                <Tab style={{ width: '50%' }} label="Sign Up" value="2" />
-              </TabList>
+            <Box aria-label="lab API tabs example">
+              <Tabs value={value} 
+              onChange={handleChange}
+              indicatorColor=''
+               sx={{
+                "& button": { borderRadius: 2 },
+                //"& button:hover": { backgroundColor: "blue" },
+                "& button:focus": { backgroundColor: "#1976d2" ,color:'white'},
+                //"& button:active": { backgroundColor: "green" }
+                "& .MuiTabs-indicator":{display: "none"}
+              
+              }}
+            >
+                <Tab style={{ width: '50%',}} label="Login"  value="1" />
+                <Tab style={{ width: '50%'}} label="Sign Up"  value="2" />
+              </Tabs>
             </Box>
             <TabPanel value="1">{<Login />}</TabPanel>
             <TabPanel value="2">{<Signup />}</TabPanel>

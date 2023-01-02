@@ -1,13 +1,25 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
-const app = express();
+const connectDB = require("./config/db");
+const router = require("./routes/userRoutes");
+const { notFound, errorHandler } = require("./middlewares/errorMiddleware");
+
 dotenv.config();
+connectDB();
+const app = express();
+app.use(express.json());
 app.use(cors());
+
 
 app.get("/hello", (req,res)=>{
     res.send("Hello World")
 })
+
+app.use("/api/user",router)
+
+app.use(notFound)
+app.use(errorHandler)
 
 if (process.env.NODE_ENV == 'production') {
     const path = require('path')
