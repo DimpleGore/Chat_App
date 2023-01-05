@@ -33,7 +33,7 @@ function Login() {
       };
 
 
-    /*const submitHandler = async() => {
+    const submitHandler = async() => {
         setLoading(true);
         if(!email || !password){
             setOpen(true);
@@ -66,7 +66,7 @@ function Login() {
             setError(true);
             setLoading(false); 
         }
-    }*/
+    }
 
     return (
         <Stack spacing="10px" color="black">
@@ -103,7 +103,7 @@ function Login() {
 
 
             </FormControl>
-            <LoadingButton loading={loading}  variant="contained" sx={{ textTransform: "none" }}>Login</LoadingButton>
+            <LoadingButton loading={loading} onClick={submitHandler} variant="contained" sx={{ textTransform: "none" }}>Login</LoadingButton>
             <Button onClick={() => {
                 setEmail("guest@example.com");
                 setPassword("12456")
