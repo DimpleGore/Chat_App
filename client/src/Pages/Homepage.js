@@ -20,6 +20,7 @@ function Homepage() {
 
   const [data, setData] = useState("");
   //const classes = useStyles();
+  const [value, setValue] = React.useState('1');
 
   const fetchData = async () => {
     const res = await axios.get("/hello");
@@ -27,7 +28,7 @@ function Homepage() {
     setData(res.data);
   }
 
-  const [value, setValue] = React.useState('1');
+  
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
