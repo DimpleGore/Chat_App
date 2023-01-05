@@ -42,7 +42,7 @@ function Signup() {
         setOpen(false);
       };
 
-      /*const submitHandler = async(req,res) => {
+      const submitHandler = async(req,res) => {
         console.log("come")
         setLoading(true);
         if(!name || !email || !password || !confirmpassword){
@@ -83,7 +83,7 @@ function Signup() {
            setError(true);
            setLoading(false); 
         }
-      }*/
+      }
 
 
       
@@ -203,7 +203,7 @@ function Signup() {
 
             </FormControl>
 
-            <LoadingButton loading={loading} variant="contained" sx={{ textTransform: "none" }} >Sign Up</LoadingButton>
+            <LoadingButton loading={loading} onClick={submitHandler} variant="contained" sx={{ textTransform: "none" }} >Sign Up</LoadingButton>
 
             {snack && <div><Snackbar anchorOrigin={{vertical: 'top',horizontal: 'center'}} open={open} autoHideDuration={6000} onClose={handleClose}>
         <Alert  onClose={handleClose} severity="success" sx={{ width: '100%' }}>
