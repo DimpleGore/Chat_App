@@ -12,14 +12,14 @@ app.use(express.json());
 app.use(cors());
 
 
-app.get("/hello", (req,res)=>{
+app.get("/", (req,res)=>{
     res.send("Hello World")
 })
 
 app.use("/api/user",router)
 
-app.use(notFound)
-app.use(errorHandler)
+//app.use(notFound)
+//app.use(errorHandler)
 
 if (process.env.NODE_ENV == 'production') {
     const path = require('path')
