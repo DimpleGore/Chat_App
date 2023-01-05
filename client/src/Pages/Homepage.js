@@ -18,15 +18,15 @@ function Homepage() {
 
   
 
-  const [data, setData] = useState("");
+  //const [data, setData] = useState("");
   //const classes = useStyles();
   const [value, setValue] = React.useState('1');
 
-  const fetchData = async () => {
+  /*const fetchData = async () => {
     const res = await axios.get("/hello");
     console.log(res)
     setData(res.data);
-  }
+  }*/
 
   
 
@@ -34,9 +34,9 @@ function Homepage() {
     setValue(newValue);
   };
 
-  useEffect(() => {
+  /*useEffect(() => {
     fetchData();
-  }, [])
+  }, [])*/
   return (
     <Container maxWidth='xs' >
       <Box
