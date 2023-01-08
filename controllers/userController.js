@@ -61,8 +61,27 @@ const authUser = asyncHandler(async(req,res) => {
         token: generateToken(user._id)
     })
 
-}
+})
 
-)
+const allUsers = asyncHandler( async(req, res) => {
+    const keyword = req.query.search ? 
+        {
+            $or : [
+                {name: {
+                    $regex: req.query.search, $options: "i"
+                }},
+                {email: {
+                    $regex: req.query.search, $options: "i"
+                }}
+                
+            ]
+        } : {};
+    
+    const users = await User.find(keyword).find({_id: {$ne: req.user._id}})
 
-module.exports = {registerUser, authUser};
+    return res.status(200).json({message: "Users fetched successfully",users})
+})
+
+
+
+module.exports = {registerUser, authUser, allUsers};
