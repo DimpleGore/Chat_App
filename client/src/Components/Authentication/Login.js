@@ -5,6 +5,7 @@ import { LoadingButton } from "@mui/lab";
 import axios from "axios";
 import * as React from "react"
 import MuiAlert from '@mui/material/Alert';
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -16,6 +17,7 @@ function Login() {
     const [open, setOpen] = useState(false)
     const [snack, setSnack] = useState(false);
     const [error, setError] = useState(false);
+    const navigate = useNavigate();
 
     const Alert = React.forwardRef(function Alert(props, ref) {
         console.log(props)
@@ -60,6 +62,7 @@ function Login() {
               setSnack(true);
               localStorage.setItem('userInfo', JSON.stringify(data));
               setLoading(false);
+              navigate("/chats")
 
         }catch(error){
             setOpen(true);

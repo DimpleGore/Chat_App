@@ -8,6 +8,7 @@ import * as React from 'react'
 import { borderRadius } from '@mui/system';
 import Login from '../Components/Authentication/Login';
 import Signup from '../Components/Authentication/Signup';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -18,25 +19,25 @@ function Homepage() {
 
   
 
-  //const [data, setData] = useState("");
-  //const classes = useStyles();
+  
   const [value, setValue] = React.useState('1');
-
-  /*const fetchData = async () => {
-    const res = await axios.get("/hello");
-    console.log(res)
-    setData(res.data);
-  }*/
-
+  const navigate = useNavigate();
+  
   
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
-  /*useEffect(() => {
-    fetchData();
-  }, [])*/
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("userInfo"));
+
+    if(user) {
+      navigate("/chats")
+    }
+  },[navigate])
+
+  
   return (
     <Container maxWidth='xs' >
       <Box
