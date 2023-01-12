@@ -6,6 +6,8 @@ import axios from "axios";
 import * as React from "react"
 import MuiAlert from '@mui/material/Alert';
 import { useNavigate } from "react-router-dom";
+import { SnackbarContext } from "../../Context/snackbarProvider";
+//import SnackbarContext from "../../Context/snackbarProvider";
 
 
 
@@ -18,6 +20,9 @@ function Login() {
     const [snack, setSnack] = useState(false);
     const [error, setError] = useState(false);
     const navigate = useNavigate();
+    const {snackbar, setSnackbar} = React.useContext(SnackbarContext)
+
+    //console.log(snackbar)
 
     const Alert = React.forwardRef(function Alert(props, ref) {
         console.log(props)
@@ -38,9 +43,8 @@ function Login() {
     const submitHandler = async() => {
         setLoading(true);
         if(!email || !password){
-            setOpen(true);
-            setSnack(false)
-            setError(true);
+           setSnackbar({isOpen: true,message: "Please fill all fields"})
+            
             setLoading(false);
             return;
             
@@ -57,16 +61,13 @@ function Login() {
                 {email, password},
                 config
               )
-              setOpen(true);
-              setError(true)
-              setSnack(true);
+              setSnackbar({status: "success",isOpen: true,message: "Login Successful"})
               localStorage.setItem('userInfo', JSON.stringify(data));
               setLoading(false);
               navigate("/chats")
 
         }catch(error){
-            setOpen(true);
-            setError(true);
+            setSnackbar({isOpen: true,message: "Error Occured!"})
             setLoading(false); 
         }
     }
@@ -117,7 +118,7 @@ function Login() {
                 },
             }}>Get Guest User Credentials</Button>
 
-{snack && <div><Snackbar anchorOrigin={{vertical: 'top',horizontal: 'center'}} open={open} autoHideDuration={6000} onClose={handleClose}>
+{/*snack && <div><Snackbar anchorOrigin={{vertical: 'top',horizontal: 'center'}} open={open} autoHideDuration={6000} onClose={handleClose}>
         <Alert  onClose={handleClose} severity="success" sx={{ width: '100%' }}>
           This is a success message!
         </Alert>
@@ -126,7 +127,7 @@ function Login() {
         <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
           This is a error message!
         </Alert>
-      </Snackbar></div>}
+          </Snackbar></div>*/}
 
 
         </Stack>

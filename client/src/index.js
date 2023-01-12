@@ -5,13 +5,19 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import ChatProvider from './Context/ChatProvider';
 import { BrowserRouter } from 'react-router-dom';
+import SnackbarContainer from './Context/snackbarProvider';
+import SnackBars from './Components/Miscellaneous/SnackBar';
+//import SnackbarContainer from './Context/snackbarProvider';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>
-  <ChatProvider>
-    <App />
-  </ChatProvider>
+    <SnackbarContainer>
+      <SnackBars/>
+      <ChatProvider>
+           <App />
+    </ChatProvider>
+    </SnackbarContainer>
   </BrowserRouter>
 );
 

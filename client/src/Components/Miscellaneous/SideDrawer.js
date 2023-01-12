@@ -1,21 +1,31 @@
-import { useState } from "react"
+import { useContext, useState } from "react"
 import SearchIcon from '@mui/icons-material/Search';
-import { Avatar, Box, Button, IconButton, Menu, MenuItem, Tooltip, Typography } from "@mui/material";
+import { Avatar, Box, Button, Drawer, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Menu, MenuItem, Tooltip, Typography,Divider, Input, TextField } from "@mui/material";
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { ChatState } from "../../Context/ChatProvider";
 import { makeStyles } from '@material-ui/core/styles';
+import ProfileModal from "./ProfileModal";
+import { useNavigate } from "react-router-dom";
+import InboxIcon from '@mui/icons-material/MoveToInbox';
+import MailIcon from '@mui/icons-material/Mail';
+import axios from "axios";
+import { SnackbarContext } from "../../Context/snackbarProvider";
+import ChatLoading from "../ChatLoading";
+import UserListItem from "../UserAvatar/UserListItem";
 
 
 
 function SideDrawer() {
-
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingChat, setLoadingChat] = useState();
   const { user } = ChatState()
   const [anchorEl, setAnchorEl] = useState(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const {snackbar, setSnackbar} = useContext(SnackbarContext)
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -25,6 +35,10 @@ function SideDrawer() {
   };
 
   console.log(user.name)
+  const logoutHandler = () => {
+    localStorage.removeItem("userInfo")
+    navigate("/")
+  }
 
   const useStyles = makeStyles((theme) => ({
 
@@ -67,6 +81,36 @@ function SideDrawer() {
     };
   }
 
+  const handleSearch = async () => {
+      if(!search){
+        setSnackbar({isOpen: true,message: "Please Enter something in search"})
+        return;
+      }
+
+      try{
+
+        setLoading(true)
+
+        const config = {
+          headers: {
+            Authorization: `Bearer ${user.token}`
+          }
+        }
+
+        const {data} = await axios.get(`/api/user/search?search=${search}`,config);
+        setLoading(false);
+        setSearchResult(data.users);
+        //console.log(searchResult)
+
+      }catch(error){
+
+        setSnackbar({isOpen: true,message: "Error Occured!"})
+        setLoading(false)
+
+      }
+
+  }
+
 
   return (
     <>
@@ -84,7 +128,7 @@ function SideDrawer() {
             '&:hover': {
               backgroundColor: '#ffffff'
             }, color: 'black'
-          }} >
+          }}  onClick={()=>setDrawerOpen(true)}>
             <SearchIcon />
             <Typography sx={{ display: { xs: 'none', md: 'block', lg: 'block' }, mt: '2', paddingLeft: "4" }}>Search User</Typography>
           </Button>
@@ -105,12 +149,46 @@ function SideDrawer() {
               'aria-labelledby': 'basic-button',
             }}
           >
-            <MenuItem onClick={handleClose}>Profile</MenuItem>
-            <MenuItem onClick={handleClose}>Logout</MenuItem>
+            <ProfileModal handleClose1={handleClose} user={user}>
+              <MenuItem >My Profile</MenuItem>
+              </ProfileModal>
+            <MenuItem onClick={logoutHandler}>Logout</MenuItem>
           </Menu>
         </div>
 
       </Box>
+      
+      <Drawer sx={{
+        "& .MuiDrawer-paper":{width: "22%"}
+      }}
+ anchor="left" open={drawerOpen} onClose={()=>setDrawerOpen(false)}>
+  <Typography sx={{fontSize:"20px",margin: "10px 0 5px 16px"}} variant="h3">Search Users</Typography>
+  <Divider/>
+      <Box display="flex"  margin="10px 0 0 16px">
+        <TextField
+         placeholder="Search by name or email"
+         value={search}
+         onChange={(e) => setSearch(e.target.value)}
+         variant="outlined"
+         
+        />
+        <Button onClick={handleSearch} style={{marginLeft: '5px'}}>Go</Button>
+      </Box>
+      {loading ? (
+        <ChatLoading/>) : (
+          searchResult?.map((user) => 
+          (
+            <UserListItem
+             key={user._id}
+             user={user}
+            />
+          )
+          )
+        )
+      }
+      </Drawer>
+      
+
     </>
   )
 }
