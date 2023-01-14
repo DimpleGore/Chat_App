@@ -22,7 +22,7 @@ function SideDrawer() {
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingChat, setLoadingChat] = useState();
-  const { user } = ChatState()
+  const { user, setSelectedChat, chats, setChats } = ChatState()
   const [anchorEl, setAnchorEl] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const {snackbar, setSnackbar} = useContext(SnackbarContext)
@@ -111,6 +111,36 @@ function SideDrawer() {
 
   }
 
+  const accessChat = async(userId) => {
+     try{
+
+      setLoadingChat(true);
+      const config = {
+        "Content-type":"application/json",
+        headers: {
+          Authorization: `Bearer ${user.token}`
+        }
+      }
+
+      const {data}= await axios.post("/api/chat/createchat", {userId}, config);
+
+      console.log(!chats.find((c) => c._id === data?.chat?._id))
+      
+      if(!chats.find((c) => c._id === data?.chat?._id)) setChats([data.chat, ...chats])
+       console.log(data);
+      setSelectedChat(data.chat)
+      setLoadingChat(false);
+      setDrawerOpen(false);
+
+
+
+
+     }catch(error){
+      setSnackbar({isOpen: true,message: "Error Occured!"}) 
+      setLoadingChat(false)
+     }
+  }
+
 
   return (
     <>
@@ -181,6 +211,7 @@ function SideDrawer() {
             <UserListItem
              key={user._id}
              user={user}
+             handleFunction={() => accessChat(user._id)}
             />
           )
           )

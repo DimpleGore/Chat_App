@@ -7,4 +7,9 @@
  /* background-size: cover;
   background-position: center;*/
   color: black;
+  
+}
+
+::-webkit-scrollbar {
+  display: none;
 }

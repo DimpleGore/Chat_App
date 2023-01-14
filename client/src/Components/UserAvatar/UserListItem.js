@@ -2,7 +2,7 @@ import { Avatar, Typography } from "@mui/material";
 import { Box } from "@mui/system"
 import { makeStyles } from '@material-ui/core/styles';
 
-const UserListItem = ({user}) => {
+const UserListItem = ({user,handleFunction}) => {
 
     const useStyles = makeStyles((theme) => ({
 
@@ -15,7 +15,7 @@ const UserListItem = ({user}) => {
       const classes = useStyles();
 
     return (
-       <Box sx={{
+       <Box onClick={handleFunction} sx={{
         display: "flex",
         cursor: "pointer",
         ":hover": {
