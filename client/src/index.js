@@ -11,7 +11,7 @@ import SnackBars from './Components/Miscellaneous/SnackBar';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <BrowserRouter>
+  <BrowserRouter basename='/'>
     <SnackbarContainer>
       <SnackBars/>
       <ChatProvider>
