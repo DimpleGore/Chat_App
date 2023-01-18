@@ -5,7 +5,7 @@ import { Box } from '@mui/system';
 import { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
-const ProfileModal = ({handleClose1,user, children}) => {
+const ProfileModal = ({user, children}) => {
    //console.log(handleClick)
    
    const [open, setOpen] = useState(false);
@@ -44,7 +44,7 @@ const ProfileModal = ({handleClose1,user, children}) => {
             children ? (
                 <span onClick={()=>setOpen(true)} >{children}</span>
             ) : (
-               <Button sx={{color: 'black'}}><VisibilityIcon/></Button> 
+               <Button sx={{color: 'black'}} onClick={()=>setOpen(true)} ><VisibilityIcon/></Button> 
             )
          }
          <Modal 

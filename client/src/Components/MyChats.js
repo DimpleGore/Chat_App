@@ -6,8 +6,11 @@ import { Box, Button, Stack, Typography } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import ChatLoading from "./ChatLoading";
 import {getSender} from "../config/ChatLogics"
+import GroupChatModal from "./Miscellaneous/GroupChatModel";
 
-function Mychats(){
+function Mychats({fetchAgain}){
+
+   console.log(fetchAgain)
 
     const [loggedUser, setLoggedUser] = useState();
     const { user, setSelectedChat, selectedChat, chats, setChats } = ChatState();
@@ -44,14 +47,14 @@ function Mychats(){
      useEffect(() => {
       setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
       fetchChats();
-     }, [])
+     }, [fetchAgain])
    //console.log(chats.users[0].name)
    console.log(selectedChat)
     return (
        <Box 
        sx={{
         display: {xs: selectedChat ? "none" : "flex",sm: selectedChat ? "none" : "flex", md: "flex"},
-        width: "40%",
+        width: {xs: "100%",sm: "100%",md: "31%"},
         backgroundColor: 'white',
         flexDirection: 'column',
         alignItems: "center",
@@ -69,6 +72,7 @@ function Mychats(){
         display="flex"
         width={"100%"}
         >My Chats
+      <GroupChatModal>
         <Button
         size="small"
         sx={{
@@ -84,6 +88,7 @@ function Mychats(){
         }}
         endIcon={<AddIcon/>}
         >New Group Chat</Button>
+        </GroupChatModal>
         </Box>
         <Box
         display={"flex"}
