@@ -9,7 +9,7 @@ import axios from "axios";
 import UserListItem from "../UserAvatar/UserListItem";
 import ChatLoading from "../ChatLoading";
 
-const UpdateGroupChatModel = ({fetchAgain, setFetchAgain}) => {
+const UpdateGroupChatModel = ({fetchAgain, setFetchAgain, fetchMessages}) => {
 
     console.log(fetchAgain)
        
@@ -67,6 +67,7 @@ const UpdateGroupChatModel = ({fetchAgain, setFetchAgain}) => {
 
           user1._id === user._id ? setSelectedChat() : setSelectedChat(data.removed)
           setFetchAgain(!fetchAgain);
+          fetchMessages();
           setLoading(false);
 
         }catch(error){
