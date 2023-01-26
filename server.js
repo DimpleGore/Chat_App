@@ -43,7 +43,7 @@ const server = app.listen(PORT,()=>{
 const io= require("socket.io")(server, {
     pingTimeOut: 60000,
     cors: {
-        origin: "http://localhost:3000"
+        origin: ["http://localhost:3000","https://chat-dskr2pgg7-dimplegore.vercel.app"]
     }
 })
 

@@ -15,7 +15,7 @@ import Lottie from 'react-lottie'
 import animationData from '../animations/typing.json'
 
 //const ENDPOINT = "http://localhost:5000";
-const ENDPOINT = "https://chat-dskr2pgg7-dimplegore.vercel.app";
+const ENDPOINT = "https://chat-dskr2pgg7-dimplegore.vercel.app/";
 var socket, selectedChatCompare;
 
 const SingleChat = ({fetchAgain, setFetchAgain}) => {
