@@ -10,15 +10,38 @@ import axios from "axios";
 import { SnackbarContext } from "../Context/snackbarProvider";
 import useStyles from "./style";
 import ScrollableChat from "./ScrollableChat";
+import io from "socket.io-client";
+import Lottie from 'react-lottie'
+import animationData from '../animations/typing.json'
+
+//const ENDPOINT = "http://localhost:5000";
+const ENDPOINT = "https://chat-dskr2pgg7-dimplegore.vercel.app";
+var socket, selectedChatCompare;
 
 const SingleChat = ({fetchAgain, setFetchAgain}) => {
 
-    const {user, selectedChat, setSelectedChat} = ChatState();
+    const {user, selectedChat, setSelectedChat, notification, setNotification} = ChatState();
     const {setSnackbar, snackbar} = useContext(SnackbarContext);
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(false);
     const [newMessage, setNewMessage] = useState("")
-    const classes = useStyles()
+    const [socketConnected, setSocketConnected] = useState(false);
+    const [typing, setTyping] = useState(false);
+    const [isTyping, setIsTyping] = useState(false);
+    const classes = useStyles();
+
+    const defaultOptions = {
+      animationData : animationData
+    }
+
+    useEffect(() => {
+      //console.log(user);
+      socket = io(ENDPOINT);
+      socket.emit("setup", user);
+      socket.on("connected", () => setSocketConnected(true));
+      socket.on("typing", () => setIsTyping(true));
+      socket.on("stop typing", () => setIsTyping(false));
+    },[])
 
     const fetchMessages = async() => {
        if(!selectedChat) return;
@@ -39,11 +62,9 @@ const SingleChat = ({fetchAgain, setFetchAgain}) => {
           config
         )
 
-        console.log(data)
-
         setMessages(data);
         setLoading(false);
-
+        socket.emit("join chat", selectedChat._id);
        }catch(error){
         setSnackbar({isOpen: true, message: "Error Occured!"});
         setLoading(false);
@@ -52,6 +73,7 @@ const SingleChat = ({fetchAgain, setFetchAgain}) => {
 
     const sendMessage = async(e) => {
        if(e.key === "Enter" && newMessage){
+        socket.emit("stop typing", selectedChat._id);
          try{
           const config = {
             "Content-type":"application/json",
@@ -65,7 +87,7 @@ const SingleChat = ({fetchAgain, setFetchAgain}) => {
             chatId: selectedChat._id
           },config);
 
-          console.log(data)
+          socket.emit("new message", data);
           setMessages([...messages,data])
          }catch(error){
             setSnackbar({isOpen: true, message: "Error Occured!"})
@@ -76,11 +98,51 @@ const SingleChat = ({fetchAgain, setFetchAgain}) => {
 
     const typingHandler = (e) => {
         setNewMessage(e.target.value);
+
+        if(!socketConnected) return;
+
+        if(!typing){
+          setTyping(true);
+          socket.emit("typing", selectedChat._id);
+        }
+
+        let lastTypingTime = new Date().getTime();
+        var timerLength = 3000;
+
+        setTimeout(() => {
+           var timeNow = new Date().getTime();
+           var timeDiff = timeNow-lastTypingTime;
+
+          if(timeDiff >= timerLength && typing){
+            socket.emit("stop typing", selectedChat._id);
+            setTyping(false);
+          }
+        },timerLength)
+        
+        
+
     }
 
     useEffect(() => {
-      fetchMessages()
+      fetchMessages();
+      selectedChatCompare = selectedChat;
     },[selectedChat])
+
+
+    useEffect(() => {
+      socket.on("message received", (newMessageReceived) => {
+        if(!selectedChatCompare || (selectedChatCompare._id !== newMessageReceived.chat._id)){
+          if(!notification.includes(newMessageReceived)){
+            setNotification([newMessageReceived, ...notification]);
+            setFetchAgain(!fetchAgain);
+          }
+        }else{
+          setMessages([...messages, newMessageReceived]);
+          console.log(messages)
+        }
+      })
+    })
+
 
     return (
            <>
@@ -90,6 +152,7 @@ const SingleChat = ({fetchAgain, setFetchAgain}) => {
                 
                 
                <Typography
+                 component={"div"}
                  sx={{
                     fontSize: {xs: '25px',sm: '28px', md: '30px'},
                     fontFamily: "Work scans",
@@ -153,6 +216,13 @@ const SingleChat = ({fetchAgain, setFetchAgain}) => {
                         )
                        }
                        <FormControl onKeyDown={sendMessage} required >
+                        {isTyping && <div>
+                            <Lottie
+                            options={defaultOptions}
+                            width={70}
+                            style={{marginBottom: 15, marginLeft: 0}}
+                            />
+                          </div>}
                        <TextField  sx={{mb: "-15px",}}
           id="outlined-password-input"
           label="Enter Message..."

@@ -1,18 +1,16 @@
 
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { Avatar, Button, Modal, Typography } from '@mui/material';
+import { Button, Modal, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 const ProfileModal = ({user, children}) => {
-   //console.log(handleClick)
    
    const [open, setOpen] = useState(false);
-   //const handleOpen = () => setOpen(true);
+
    const handleClose = () =>{ 
     setOpen(false)
-    console.log(open)
    };
 
    const useStyles = makeStyles((theme) => ({
@@ -35,8 +33,7 @@ const ProfileModal = ({user, children}) => {
     boxShadow: 24,
     p: 4,
   };
-  const classes = useStyles()
-  console.log(open)
+  
    
     return (
         <>

@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react"
 import { ChatState } from "../Context/ChatProvider";
 import axios from "axios"
 import { SnackbarContext } from "../Context/snackbarProvider";
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Stack, Typography } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import ChatLoading from "./ChatLoading";
 import {getSender} from "../config/ChatLogics"
@@ -10,17 +10,17 @@ import GroupChatModal from "./Miscellaneous/GroupChatModel";
 
 function Mychats({fetchAgain}){
 
-   console.log(fetchAgain)
-
     const [loggedUser, setLoggedUser] = useState();
+    const [loadingChat, setLoadingChat] = useState(false)
     const { user, setSelectedChat, selectedChat, chats, setChats } = ChatState();
     const {snackbar, setSnackbar} = useContext(SnackbarContext)
-    console.log(selectedChat)
+
+    console.log(chats)
 
     const fetchChats = async() => {
         try{
    
-         //setLoadingChat(true);
+         setLoadingChat(true);
          const config = {
            "Content-type":"application/json",
            headers: {
@@ -29,10 +29,8 @@ function Mychats({fetchAgain}){
          }
    
          const {data}= await axios.get("/api/chat/fetchchat",  config);
-   
-         console.log(data);
          setChats(data.results)
-         //setLoadingChat(false);
+         setLoadingChat(false);
          //setDrawerOpen(false);
    
    
@@ -40,7 +38,7 @@ function Mychats({fetchAgain}){
    
         }catch(error){
          setSnackbar({isOpen: true,message: "Error Occured!"}) 
-         //setLoadingChat(false)
+         setLoadingChat(false)
         }
      }
 
@@ -48,8 +46,7 @@ function Mychats({fetchAgain}){
       setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
       fetchChats();
      }, [fetchAgain])
-   //console.log(chats.users[0].name)
-   console.log(selectedChat)
+   
     return (
        <Box 
        sx={{
@@ -98,7 +95,7 @@ function Mychats({fetchAgain}){
         height={"470px"}
         borderRadius="5px"  
         >
-        {chats ? (
+        {chats.length>0 && !loadingChat ? (
            <Stack sx={{overflowY: "scroll"}}>
               {
                 chats.map((chat) => (
@@ -125,7 +122,11 @@ function Mychats({fetchAgain}){
               }
            </Stack>
         ) : (
-          <ChatLoading/>
+           loadingChat ? <CircularProgress
+                          sx={{
+                            margin: "auto"
+                            
+                          }}/> : chats.length==0 && <Typography fontSize={25} pb={3} fontFamily={"work sans"} fontWeight="bold">No Chats Found...</Typography>
         )}
         </Box>
        </Box>

@@ -1,29 +1,31 @@
 import { useContext, useState } from "react"
 import SearchIcon from '@mui/icons-material/Search';
-import { Avatar, Box, Button, Drawer, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Menu, MenuItem, Tooltip, Typography,Divider, Input, TextField } from "@mui/material";
+import { Avatar, Box, Button, Drawer, Menu, MenuItem, Tooltip, Typography,Divider, TextField} from "@mui/material";
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { ChatState } from "../../Context/ChatProvider";
 import { makeStyles } from '@material-ui/core/styles';
 import ProfileModal from "./ProfileModal";
 import { useNavigate } from "react-router-dom";
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
 import axios from "axios";
 import { SnackbarContext } from "../../Context/snackbarProvider";
 import ChatLoading from "../ChatLoading";
 import UserListItem from "../UserAvatar/UserListItem";
+import { getSender } from "../../config/ChatLogics";
+import NotificationBadge from 'react-notification-badge';
+import { Effect } from "react-notification-badge";
 
 
 
-function SideDrawer() {
+function SideDrawer({fetchAgain,setFetchAgain}) {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingChat, setLoadingChat] = useState();
-  const { user, setSelectedChat, chats, setChats } = ChatState()
+  const { user, setSelectedChat, chats, setChats, notification, setNotification } = ChatState()
   const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorE1, setAnchorE1] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const {snackbar, setSnackbar} = useContext(SnackbarContext)
   const open = Boolean(anchorEl);
@@ -34,7 +36,15 @@ function SideDrawer() {
     setAnchorEl(null);
   };
 
-  console.log(user.name)
+  const open1 = Boolean(anchorE1);
+  const handleClick1 = (event) => {
+    setAnchorE1(event.currentTarget);
+  };
+  const handleClose1 = () => {
+    setAnchorE1(null);
+  };
+
+
   const logoutHandler = () => {
     localStorage.removeItem("userInfo")
     navigate("/")
@@ -72,7 +82,6 @@ function SideDrawer() {
   }
 
   function stringAvatar(name) {
-    console.log(name)
     return {
       sx: {
         bgcolor: stringToColor(name),
@@ -99,8 +108,13 @@ function SideDrawer() {
 
         const {data} = await axios.get(`/api/user/search?search=${search}`,config);
         setLoading(false);
+        if(data && data.users.length===0){
+          setSnackbar({isOpen: true,message: "Not Found"});
+          setSearchResult(data.users);
+          return;
+        }
         setSearchResult(data.users);
-        //console.log(searchResult)
+        
 
       }catch(error){
 
@@ -123,10 +137,12 @@ function SideDrawer() {
       }
 
       const {data}= await axios.post("/api/chat/createchat", {userId}, config);
-
-      console.log(!chats.find((c) => c._id === data?.chat?._id))
       
-      if(!chats.find((c) => c._id === data?.chat?._id)) setChats([data.chat, ...chats])
+      if(!chats.find((c) => c._id === data?.chat?._id)) {
+        setChats([data.chat, ...chats]);
+        console.log(chats)
+        //setFetchAgain(!fetchAgain)
+      }
        console.log(data);
       setSelectedChat(data.chat)
       setLoadingChat(false);
@@ -166,7 +182,45 @@ function SideDrawer() {
         </Tooltip>
         <Typography style={{ fontSize: "18px", fontFamily: "work-sans", padding: "3px" }}>Talk-A-Tive</Typography>
         <div>
-          <Button sx={{ color: "black" }}><NotificationsActiveIcon /></Button>
+          <Button p={1} sx={{ color: "black" }} onClick={handleClick1}>
+            <NotificationBadge  count={notification.length} effect={Effect.SCALE}/>
+            <NotificationsActiveIcon /></Button>
+          <Menu
+            id="basic-menu"
+            anchorEl={anchorE1}
+            open={open1}
+            onClose={handleClose1}
+            MenuListProps={{
+              'aria-labelledby': 'basic-button',
+            }}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+          
+          >
+            
+              <MenuItem >{!notification.length && "No New Messages"}</MenuItem>
+              {notification.map((notify) => (
+                <MenuItem key={notify._id} onClick={
+                  () => {setSelectedChat(notify.chat);
+                    setNotification(notification.filter((n) => n!== notify))
+                  }
+                }>
+                  {notify.chat.isGroupChat ? 
+                  `New Message in ${notify.chat.chatName}`
+                  : `New Message from ${getSender(user, notify.chat.users)}`
+                  }
+                </MenuItem>
+              ))}
+              
+            
+          </Menu>
+
           <Button endIcon={<KeyboardArrowDownIcon />} onClick={handleClick}>
             <Avatar src={user.pic} {...stringAvatar(user.name)} className={classes.small} />
           </Button>
@@ -178,6 +232,11 @@ function SideDrawer() {
             MenuListProps={{
               'aria-labelledby': 'basic-button',
             }}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+            
           >
             <ProfileModal handleClose1={handleClose} user={user}>
               <MenuItem >My Profile</MenuItem>

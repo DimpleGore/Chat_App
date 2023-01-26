@@ -1,4 +1,4 @@
-import { Box, Button, FormControl, Modal, TextField, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, FormControl, Modal, TextField, Typography } from "@mui/material";
 import axios from "axios";
 import { useContext, useState } from "react";
 import { ChatState } from "../../Context/ChatProvider";
@@ -17,13 +17,12 @@ const GroupChatModal = ({children}) => {
 
     const {user, chats, setChats} = ChatState();
 
-    const {snackbar, setSnackbar} = useContext(SnackbarContext)
+    const { setSnackbar} = useContext(SnackbarContext)
 
     const [open, setOpen] = useState(false);
    //const handleOpen = () => setOpen(true);
    const handleClose = () =>{ 
     setOpen(false)
-    console.log(open)
    };
 
    const style = {
@@ -148,7 +147,12 @@ const GroupChatModal = ({children}) => {
             </Box>
             { 
               loading ? (
-                <ChatLoading/>
+                <CircularProgress
+                sx={{
+                  margin: "auto"
+                  
+                }}
+                />
               ) : (
                 searchResult?.slice(0,4).map((user) => (
                     <UserListItem
